@@ -6,17 +6,22 @@ class StateManager extends EventTarget {
             pitch: 0,
             cutoff: 1000,
             drive: 0,
-            steps: new Array(16).fill(false),
+            bpm: 124,
             currentStep: 0,
-            bpm: 124
+            tracks: {
+                synth: new Array(16).fill(false),
+                kick: new Array(16).fill(false),
+                snare: new Array(16).fill(false),
+                hats: new Array(16).fill(false)
+            }
         };
     }
     update(key, val) {
         this.state[key] = val;
         this.dispatchEvent(new CustomEvent('change', { detail: this.state }));
     }
-    toggleStep(index) {
-        this.state.steps[index] = !this.state.steps[index];
+    toggleStep(track, index) {
+        this.state.tracks[track][index] = !this.state.tracks[track][index];
         this.dispatchEvent(new CustomEvent('change', { detail: this.state }));
     }
 }

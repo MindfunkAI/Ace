@@ -2,75 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ACE-Step MaaS Terminal</title>
+    <title>ACE-Step // MaaS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body class="flex flex-col h-screen font-mono bg-[#050505] text-zinc-300 overflow-hidden">
-    <header class="h-14 border-b border-zinc-800 flex items-center justify-between px-6 bg-[#111] z-50">
-        <div class="flex items-center gap-3 text-[#ccff00] font-bold tracking-tighter text-lg">ACE-STEP // MaaS</div>
-        <nav class="flex gap-4 h-full">
-            <button class="tab-btn h-full px-4 text-zinc-500 text-xs uppercase" data-target="view-dashboard">Dashboard</button>
-            <button class="tab-btn h-full px-4 text-[#ccff00] border-b-2 border-[#ccff00] text-xs uppercase" data-target="view-producer">Producer</button>
-            <button class="tab-btn h-full px-4 text-zinc-500 text-xs uppercase" data-target="view-3d">3D Engine</button>
-        </nav>
+    <header class="h-12 border-b border-zinc-800 flex items-center justify-between px-6 bg-[#111]">
+        <div class="text-[#ccff00] font-bold tracking-tighter uppercase">ACE-Step // Drum_Core</div>
     </header>
 
-    <main class="flex-1 relative overflow-hidden bg-black">
-        <div id="view-dashboard" class="view-panel h-full w-full p-6 hidden">
-            <textarea id="prompt-input" class="w-full h-40 bg-black border border-zinc-800 text-[#ccff00] p-4 rounded outline-none focus:border-[#ccff00]" placeholder="Enter audio concept..."></textarea>
-        </div>
+    <main class="flex-1 relative bg-black">
+        <div id="3d-container" class="absolute inset-0 z-0 opacity-40"></div>
+        <div class="relative z-10 p-6 flex flex-col h-full">
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-[#0a0a0a] border border-zinc-800 p-4 rounded">
+                    <div class="text-[9px] text-zinc-500 mb-2">OSC_PITCH</div>
+                    <input type="range" class="tactical-fader" data-param="pitch" min="-12" max="12" value="0">
+                    <div id="val-pitch" class="text-[10px] text-[#ccff00] mt-1">0</div>
+                </div>
+            </div>
 
-        <div id="view-producer" class="view-panel h-full w-full p-6 overflow-y-auto">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-20">
-                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
-                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">01. OSCILLATOR_CORE</h3>
-                    <div class="space-y-8">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">PITCH</span><span class="text-[#ccff00]" id="val-pitch">0</span></div>
-                            <input type="range" class="tactical-fader" data-param="pitch" min="-24" max="24" value="0">
-                        </div>
+            <div class="mt-auto bg-[#080808] border border-zinc-800 p-4 rounded shadow-2xl">
+                <div id="sequencer-grid" class="grid grid-cols-[50px_repeat(16,_1fr)] gap-2">
                     </div>
-                </section>
-                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
-                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">02. LADDER_FILTER</h3>
-                    <div class="space-y-8">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">CUTOFF</span><span class="text-[#ccff00]" id="val-cutoff">1000Hz</span></div>
-                            <input type="range" class="tactical-fader" data-param="cutoff" min="20" max="20000" value="1000">
-                        </div>
-                    </div>
-                </section>
-                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
-                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">03. FX_DRIVE</h3>
-                    <div class="space-y-8">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">DRIVE</span><span class="text-[#ccff00]" id="val-drive">0%</span></div>
-                            <input type="range" class="tactical-fader" data-param="drive" min="0" max="100" value="0">
-                        </div>
-                    </div>
-                </section>
             </div>
         </div>
-
-        <div id="view-3d" class="view-panel h-full w-full hidden"><div id="3d-container" class="w-full h-full"></div></div>
     </main>
 
-    <div class="h-32 border-t border-zinc-800 bg-[#080808] px-6 py-4 flex flex-col gap-3">
-        <div class="flex justify-between items-center px-2">
-            <span class="text-[9px] text-zinc-500 tracking-[0.3em] uppercase">Step_Sequencer_v1.0</span>
-            <div class="flex gap-4">
-                <div class="text-[9px] text-zinc-500 uppercase">BPM: <span class="text-[#ccff00]">124</span></div>
-                <div class="text-[9px] text-zinc-500 uppercase">Step: <span id="current-step-display" class="text-[#ccff00]">1</span>/16</div>
-            </div>
-        </div>
-        <div id="sequencer-grid" class="flex-1 grid grid-cols-16 gap-2">
-            </div>
-    </div>
-
-    <footer class="h-16 border-t border-zinc-900 bg-[#111] flex items-center justify-between px-8 z-50">
-        <div class="text-[10px] text-zinc-600 font-bold tracking-widest uppercase">MaaS // ACE-Step Active</div>
-        <button id="btn-render" class="px-8 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-all">START ENGINE</button>
+    <footer class="h-14 border-t border-zinc-900 bg-[#111] flex items-center justify-center">
+        <button id="btn-render" class="px-12 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-all">START ENGINE</button>
     </footer>
 
     <script type="module" src="./js/state.js"></script>
