@@ -5,11 +5,9 @@ class StateManager extends EventTarget {
             pitch: 0,
             cutoff: 1000,
             drive: 0,
-            delay: 30, // Delay feedback %
-            lfoSpeed: 5, // LFO Snelheid in Hz
             bpm: 124,
             currentStep: 0,
-            lastKickTime: 0,
+            glitchActive: false,
             tracks: {
                 synth: new Array(16).fill(false),
                 kick: new Array(16).fill(false),
