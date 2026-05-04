@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
         rowLabel.className = "text-[8px] text-zinc-600 self-center uppercase font-bold";
         rowLabel.textContent = track;
         grid.appendChild(rowLabel);
+
         for (let i = 0; i < 16; i++) {
             const pad = document.createElement('div');
-            pad.className = `step-pad track-${track}`;
-            pad.dataset.step = i; pad.dataset.track = track;
+            pad.className = `step-pad track-${track} ${appState.state.tracks[track][i] ? 'on' : ''}`;
+            pad.dataset.step = i;
+            pad.dataset.track = track;
             pad.addEventListener('click', () => {
                 appState.toggleStep(track, i);
                 pad.classList.toggle('on');
@@ -30,16 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.getElementById('btn-save').addEventListener('click', () => appState.save());
     document.getElementById('btn-glitch').addEventListener('click', () => {
-        const active = !appState.state.glitchActive;
-        appState.update('glitchActive', active);
-        document.getElementById('btn-glitch').classList.toggle('bg-red-900', active);
-        document.getElementById('btn-glitch').classList.toggle('text-white', active);
-        document.getElementById('btn-glitch').textContent = active ? "MALFUNCTION_ACTIVE" : "GLITCH_SYSTEM";
+        appState.update('glitchActive', !appState.state.glitchActive);
     });
 
     document.getElementById('btn-render').addEventListener('click', () => {
         audioEngine.init();
-        document.getElementById('btn-render').textContent = "SYSTEM ONLINE";
+        document.getElementById('btn-render').textContent = "Engine_Active";
     });
 });

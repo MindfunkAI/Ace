@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ACE-Step // GLITCH_CORE</title>
+    <title>ACE-Step // PERSISTENCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body class="flex flex-col h-screen font-mono bg-[#050505] text-zinc-300 overflow-hidden">
     <main class="flex-1 relative bg-black">
-        <div id="3d-container" class="absolute inset-0 z-0 opacity-50"></div>
+        <div id="3d-container" class="absolute inset-0 z-0 opacity-40"></div>
         <div class="relative z-10 p-6 flex flex-col h-full">
-            <div class="flex gap-4 mb-6">
-                <button id="btn-glitch" class="px-6 py-2 border border-red-600 text-red-600 text-[10px] font-bold uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">GLITCH_SYSTEM</button>
+            <div class="flex gap-4 mb-4">
+                <button id="btn-glitch" class="px-4 py-1 border border-red-600 text-red-600 text-[9px] font-bold uppercase">Glitch_Sys</button>
+                <button id="btn-save" class="px-4 py-1 border border-[#ccff00] text-[#ccff00] text-[9px] font-bold uppercase hover:bg-[#ccff00] hover:text-black">Save_Pattern</button>
             </div>
-            <div class="mt-auto bg-[#080808]/80 border border-zinc-800 p-4 rounded backdrop-blur-sm">
+            <div class="mt-auto bg-[#080808]/90 border border-zinc-800 p-4 rounded shadow-2xl">
                 <div id="sequencer-grid" class="grid grid-cols-[50px_repeat(16,_1fr)] gap-2"></div>
             </div>
         </div>
     </main>
     <footer class="h-14 border-t border-zinc-900 bg-[#111] flex items-center justify-between px-8">
-        <div class="text-[9px] text-zinc-600 font-bold uppercase tracking-[0.2em]">MaaS // Audio_Visual_Link</div>
-        <button id="btn-render" class="px-10 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold text-[10px] uppercase">Initialise System</button>
+        <div class="text-[9px] text-zinc-600 font-bold uppercase tracking-[0.2em]">Data_Link: Established</div>
+        <button id="btn-render" class="px-10 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold text-[10px] uppercase">Start Engine</button>
     </footer>
     <script type="module" src="./js/state.js"></script>
     <script type="module" src="./js/audio_engine.js"></script>
