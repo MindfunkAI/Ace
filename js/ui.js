@@ -1,12 +1,9 @@
 import { appState } from './state.js';
 import { api } from './api.js';
-import { audioEngine } from './audio_engine.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.tab-btn');
     const views = document.querySelectorAll('.view-panel');
-    const renderBtn = document.getElementById('btn-render');
-    let isPlaying = false;
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -15,30 +12,34 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('text-[#ccff00]', 'border-b-2');
             views.forEach(v => v.classList.add('hidden'));
             document.getElementById(mode).classList.remove('hidden');
-            if (window.setVisualMode) window.setVisualMode(mode === 'view-3d' ? 'pbr' : mode === 'view-producer' ? 'glitch' : 'vector');
+
+            if (window.setVisualMode) {
+                if (mode === 'view-3d') window.setVisualMode('pbr');
+                if (mode === 'view-producer') window.setVisualMode('glitch');
+                if (mode === 'view-dashboard') window.setVisualMode('vector');
+            }
         });
     });
 
-    renderBtn.addEventListener('click', () => {
-        if (!isPlaying) {
-            audioEngine.start();
-            renderBtn.textContent = "STOP LOOP";
-            renderBtn.classList.add('bg-[#ccff00]', 'text-black');
-            isPlaying = true;
-        } else {
-            audioEngine.stop();
-            renderBtn.textContent = "RENDER LOOP";
-            renderBtn.classList.remove('bg-[#ccff00]', 'text-black');
-            isPlaying = false;
-        }
+    // Fader handling
+    const faders = document.querySelectorAll('.tactical-fader');
+    faders.forEach(fader => {
+        fader.addEventListener('input', (e) => {
+            const param = e.target.dataset.param;
+            const val = e.target.value;
+            
+            // Update State
+            appState.update(param, val);
+
+            // Update Label visuals
+            const label = document.getElementById(`val-${param}`);
+            if (label) {
+                if (param === 'cutoff') label.textContent = `${val}Hz`;
+                else if (param === 'pitch') label.textContent = val > 0 ? `+${val}` : val;
+                else label.textContent = `${val}%`;
+            }
+        });
     });
 
-    // Sliders koppelen
-    document.getElementById('slider-cutoff').addEventListener('input', (e) => {
-        audioEngine.setParam('cutoff', parseFloat(e.target.value));
-    });
-
-    document.getElementById('slider-res').addEventListener('input', (e) => {
-        audioEngine.setParam('resonance', parseFloat(e.target.value));
-    });
+    document.getElementById('btn-render').addEventListener('click', () => api.render());
 });

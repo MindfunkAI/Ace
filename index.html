@@ -7,22 +7,76 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body class="flex flex-col h-screen font-mono bg-[#050505] text-zinc-300">
-    <header class="h-14 border-b border-zinc-800 flex items-center justify-between px-6 bg-[#111]">
+    <header class="h-14 border-b border-zinc-800 flex items-center justify-between px-6 bg-[#111] z-50">
         <div class="flex items-center gap-3 text-[#ccff00] font-bold tracking-tighter">ACE-STEP // MaaS</div>
         <nav class="flex gap-4 h-full">
-            <button class="tab-btn h-full px-4 text-[#ccff00] border-b-2 border-[#ccff00] text-xs uppercase" data-target="view-dashboard">Dashboard</button>
-            <button class="tab-btn h-full px-4 text-zinc-500 text-xs uppercase" data-target="view-producer">Producer</button>
+            <button class="tab-btn h-full px-4 text-zinc-500 text-xs uppercase" data-target="view-dashboard">Dashboard</button>
+            <button class="tab-btn h-full px-4 text-[#ccff00] border-b-2 border-[#ccff00] text-xs uppercase" data-target="view-producer">Producer</button>
             <button class="tab-btn h-full px-4 text-zinc-500 text-xs uppercase" data-target="view-3d">3D Engine</button>
         </nav>
     </header>
-    <main class="flex-1 relative overflow-hidden">
-        <div id="view-dashboard" class="view-panel h-full w-full p-6"><textarea id="prompt-input" class="w-full h-40 bg-black border border-zinc-800 text-[#ccff00] p-4 rounded outline-none focus:border-[#ccff00]" placeholder="Enter audio concept..."></textarea></div>
-        <div id="view-producer" class="view-panel h-full w-full hidden p-6"><div class="h-full border border-zinc-800 rounded-lg p-4 bg-[#111]">Producer Controls Ready</div></div>
+
+    <main class="flex-1 relative overflow-hidden bg-black">
+        <div id="view-dashboard" class="view-panel h-full w-full p-6 hidden">
+            <textarea id="prompt-input" class="w-full h-40 bg-black border border-zinc-800 text-[#ccff00] p-4 rounded outline-none focus:border-[#ccff00]" placeholder="Enter audio concept..."></textarea>
+        </div>
+
+        <div id="view-producer" class="view-panel h-full w-full p-6 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                
+                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
+                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">01. OSCILLATOR_CORE</h3>
+                    <div class="space-y-8">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">PITCH</span><span class="text-[#ccff00]" id="val-pitch">0</span></div>
+                            <input type="range" class="tactical-fader" data-param="pitch" min="-24" max="24" value="0">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">WAVE_FOLD</span><span class="text-[#ccff00]" id="val-fold">0%</span></div>
+                            <input type="range" class="tactical-fader" data-param="wavefold" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
+                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">02. LADDER_FILTER</h3>
+                    <div class="space-y-8">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">CUTOFF</span><span class="text-[#ccff00]" id="val-cutoff">1000Hz</span></div>
+                            <input type="range" class="tactical-fader" data-param="cutoff" min="20" max="20000" value="1000">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">RESONANCE</span><span class="text-[#ccff00]" id="val-res">15%</span></div>
+                            <input type="range" class="tactical-fader" data-param="resonance" min="0" max="100" value="15">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="hardware-panel p-6 rounded border border-zinc-800 bg-[#0a0a0a]">
+                    <h3 class="text-[#00ffff] text-[10px] tracking-[0.2em] mb-6 uppercase font-bold">03. FX_MANIPULATOR</h3>
+                    <div class="space-y-8">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">DRIVE</span><span class="text-[#ccff00]" id="val-drive">0%</span></div>
+                            <input type="range" class="tactical-fader" data-param="drive" min="0" max="100" value="0">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between text-[10px]"><span class="text-zinc-500">REVERB_WET</span><span class="text-[#ccff00]" id="val-reverb">20%</span></div>
+                            <input type="range" class="tactical-fader" data-param="reverb" min="0" max="100" value="20">
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
         <div id="view-3d" class="view-panel h-full w-full hidden"><div id="3d-container" class="w-full h-full"></div></div>
     </main>
-    <footer class="h-20 border-t border-zinc-800 bg-[#111] flex items-center justify-between px-8">
-        <button id="btn-render" class="px-8 py-3 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-all">RENDER LOOP</button>
+
+    <footer class="h-20 border-t border-zinc-800 bg-[#111] flex items-center justify-between px-8 z-50">
+        <div class="text-[10px] text-zinc-600 font-bold tracking-widest">STATUS: NOMINAL // ENGINE: HYBRID_v3</div>
+        <button id="btn-render" class="px-8 py-3 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-all shadow-[0_0_15px_rgba(204,255,0,0.2)]">RENDER LOOP</button>
     </footer>
+
     <script type="module" src="./js/state.js"></script>
     <script type="module" src="./js/api.js"></script>
     <script type="module" src="./js/ui.js"></script>
