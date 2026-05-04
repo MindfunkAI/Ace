@@ -1,5 +1,6 @@
 import { appState } from './state.js';
 import { api } from './api.js';
+import { audioEngine } from './audio_engine.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.tab-btn');
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('text-[#ccff00]', 'border-b-2');
             views.forEach(v => v.classList.add('hidden'));
             document.getElementById(mode).classList.remove('hidden');
-
             if (window.setVisualMode) {
                 if (mode === 'view-3d') window.setVisualMode('pbr');
                 if (mode === 'view-producer') window.setVisualMode('glitch');
@@ -21,25 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Fader handling
-    const faders = document.querySelectorAll('.tactical-fader');
-    faders.forEach(fader => {
+    document.querySelectorAll('.tactical-fader').forEach(fader => {
         fader.addEventListener('input', (e) => {
             const param = e.target.dataset.param;
             const val = e.target.value;
-            
-            // Update State
             appState.update(param, val);
-
-            // Update Label visuals
+            audioEngine.updateParams(appState.state);
+            
             const label = document.getElementById(`val-${param}`);
-            if (label) {
-                if (param === 'cutoff') label.textContent = `${val}Hz`;
-                else if (param === 'pitch') label.textContent = val > 0 ? `+${val}` : val;
-                else label.textContent = `${val}%`;
-            }
+            if (label) label.textContent = (param === 'cutoff') ? `${val}Hz` : `${val}%`;
         });
     });
 
-    document.getElementById('btn-render').addEventListener('click', () => api.render());
+    document.getElementById('btn-render').addEventListener('click', () => {
+        audioEngine.init();
+        api.render();
+    });
 });

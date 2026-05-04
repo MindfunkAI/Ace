@@ -1,45 +1,67 @@
-export const audioEngine = {
-    ctx: null,
-    oscillator: null,
-    gainNode: null,
-    filter: null,
+import { appState } from './state.js';
+
+class AudioEngine {
+    constructor() {
+        this.ctx = null;
+        this.osc = null;
+        this.filter = null;
+        this.dist = null;
+        this.gain = null;
+        this.initialized = false;
+    }
 
     init() {
+        if (this.initialized) return;
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.filter = this.ctx.createBiquadFilter();
-        this.filter.type = 'lowpass';
-        this.filter.frequency.value = 1000;
-
-        this.gainNode = this.ctx.createGain();
-        this.gainNode.gain.value = 0;
-
-        this.filter.connect(this.gainNode);
-        this.gainNode.connect(this.ctx.destination);
-    },
-
-    start() {
-        if (!this.ctx) this.init();
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-
-        this.oscillator = this.ctx.createOscillator();
-        this.oscillator.type = 'sawtooth';
-        this.oscillator.frequency.value = 55; // Deep Bass
-        this.oscillator.connect(this.filter);
-        this.oscillator.start();
         
-        this.gainNode.gain.setTargetAtTime(0.5, this.ctx.currentTime, 0.1);
-    },
+        this.osc = this.ctx.createOscillator();
+        this.filter = this.ctx.createBiquadFilter();
+        this.dist = this.ctx.createWaveShaper();
+        this.gain = this.ctx.createGain();
 
-    stop() {
-        if (this.gainNode) {
-            this.gainNode.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
-            setTimeout(() => this.oscillator.stop(), 200);
-        }
-    },
+        this.osc.type = 'sawtooth';
+        this.filter.type = 'lowpass';
+        this.gain.gain.value = 0.2;
 
-    setParam(param, value) {
-        if (!this.ctx) return;
-        if (param === 'cutoff') this.filter.frequency.setTargetAtTime(value, this.ctx.currentTime, 0.05);
-        if (param === 'resonance') this.filter.Q.setTargetAtTime(value, this.ctx.currentTime, 0.05);
+        this.osc.connect(this.filter);
+        this.filter.connect(this.dist);
+        this.dist.connect(this.gain);
+        this.gain.connect(this.ctx.destination);
+
+        this.osc.start();
+        this.initialized = true;
+        console.log("AUDIO_CORE: ONLINE");
     }
-};
+
+    updateParams(state) {
+        if (!this.initialized) return;
+        
+        // Pitch mapping
+        const freq = 110 * Math.pow(2, (state.pitch || 0) / 12);
+        this.osc.frequency.setTargetAtTime(freq, this.ctx.currentTime, 0.1);
+
+        // Filter mapping
+        this.filter.frequency.setTargetAtTime(state.cutoff || 1000, this.ctx.currentTime, 0.1);
+        this.filter.Q.setTargetAtTime((state.resonance || 15) / 5, this.ctx.currentTime, 0.1);
+
+        // Drive (Distortion)
+        if (state.drive > 0) {
+            this.dist.curve = this.makeDistortionCurve(state.drive);
+        } else {
+            this.dist.curve = null;
+        }
+    }
+
+    makeDistortionCurve(amount) {
+        const k = amount * 2;
+        const n_samples = 44100;
+        const curve = new Float32Array(n_samples);
+        for (let i = 0; i < n_samples; ++i) {
+            const x = (i * 2) / n_samples - 1;
+            curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+        }
+        return curve;
+    }
+}
+
+export const audioEngine = new AudioEngine();
