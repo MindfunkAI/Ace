@@ -2,37 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ACE-Step // MaaS</title>
+    <title>ACE-Step // FX_CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body class="flex flex-col h-screen font-mono bg-[#050505] text-zinc-300 overflow-hidden">
-    <header class="h-12 border-b border-zinc-800 flex items-center justify-between px-6 bg-[#111]">
-        <div class="text-[#ccff00] font-bold tracking-tighter uppercase">ACE-Step // Drum_Core</div>
-    </header>
-
     <main class="flex-1 relative bg-black">
-        <div id="3d-container" class="absolute inset-0 z-0 opacity-40"></div>
-        <div class="relative z-10 p-6 flex flex-col h-full">
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <div class="bg-[#0a0a0a] border border-zinc-800 p-4 rounded">
-                    <div class="text-[9px] text-zinc-500 mb-2">OSC_PITCH</div>
-                    <input type="range" class="tactical-fader" data-param="pitch" min="-12" max="12" value="0">
-                    <div id="val-pitch" class="text-[10px] text-[#ccff00] mt-1">0</div>
+        <div id="3d-container" class="absolute inset-0 z-0 opacity-60"></div>
+        <div class="relative z-10 p-4 flex flex-col h-full">
+            <div class="grid grid-cols-4 gap-3 mb-4">
+                <div class="bg-[#111] border border-zinc-800 p-3 rounded">
+                    <div class="text-[8px] text-zinc-500">DELAY_FEEDBACK</div>
+                    <input type="range" class="tactical-fader" data-param="delay" min="0" max="90" value="30">
+                    <div id="val-delay" class="text-[9px] text-[#ccff00]">30%</div>
+                </div>
+                <div class="bg-[#111] border border-zinc-800 p-3 rounded">
+                    <div class="text-[8px] text-zinc-500">LFO_SPEED</div>
+                    <input type="range" class="tactical-fader" data-param="lfoSpeed" min="1" max="20" value="5">
+                    <div id="val-lfoSpeed" class="text-[9px] text-[#ccff00]">5Hz</div>
                 </div>
             </div>
-
-            <div class="mt-auto bg-[#080808] border border-zinc-800 p-4 rounded shadow-2xl">
-                <div id="sequencer-grid" class="grid grid-cols-[50px_repeat(16,_1fr)] gap-2">
-                    </div>
+            <div class="mt-auto bg-[#080808]/90 border border-zinc-800 p-4 rounded backdrop-blur-md">
+                <div id="sequencer-grid" class="grid grid-cols-[50px_repeat(16,_1fr)] gap-1"></div>
             </div>
         </div>
     </main>
-
-    <footer class="h-14 border-t border-zinc-900 bg-[#111] flex items-center justify-center">
-        <button id="btn-render" class="px-12 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-all">START ENGINE</button>
+    <footer class="h-12 border-t border-zinc-900 bg-[#111] flex items-center justify-center">
+        <button id="btn-render" class="px-10 py-1 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold text-xs uppercase tracking-widest">Initialise System</button>
     </footer>
-
     <script type="module" src="./js/state.js"></script>
     <script type="module" src="./js/audio_engine.js"></script>
     <script type="module" src="./js/ui.js"></script>
