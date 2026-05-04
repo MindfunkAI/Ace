@@ -2,27 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ACE-Step // PERSISTENCE</title>
+    <title>ACE-Step // ULTRA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        body { background: #000; color: #ccff00; font-family: monospace; overflow: hidden; }
+        .crt::before {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+        .fader { accent-color: #ccff00; width: 100%; }
+        .step-pad { width: 100%; height: 20px; background: #111; border: 1px solid #222; cursor: pointer; }
+        .step-pad.on { background: #ccff00; box-shadow: 0 0 10px #ccff00; }
+        .step-pad.current { border-color: #fff; }
+    </style>
 </head>
-<body class="flex flex-col h-screen font-mono bg-[#050505] text-zinc-300 overflow-hidden">
-    <main class="flex-1 relative bg-black">
-        <div id="3d-container" class="absolute inset-0 z-0 opacity-40"></div>
-        <div class="relative z-10 p-6 flex flex-col h-full">
-            <div class="flex gap-4 mb-4">
-                <button id="btn-glitch" class="px-4 py-1 border border-red-600 text-red-600 text-[9px] font-bold uppercase">Glitch_Sys</button>
-                <button id="btn-save" class="px-4 py-1 border border-[#ccff00] text-[#ccff00] text-[9px] font-bold uppercase hover:bg-[#ccff00] hover:text-black">Save_Pattern</button>
+<body class="crt flex flex-col h-screen">
+    <header class="p-4 border-b border-zinc-800 flex justify-between bg-[#050505]">
+        <div class="font-bold tracking-widest uppercase">ACE-STEP // MULTI-ENGINE v4</div>
+        <div class="flex gap-4">
+            <button id="btn-save" class="text-[10px] border border-[#ccff00] px-2">SAVE</button>
+            <button id="btn-render" class="bg-[#ccff00] text-black font-bold px-4 text-xs">INITIALIZE</button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
+        <div id="3d-container" class="h-48 border border-zinc-900 bg-black/50"></div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-[9px] uppercase">
+            <div class="bg-zinc-900/50 p-2 border border-zinc-800">
+                BPM: <span id="val-bpm">124</span>
+                <input type="range" class="fader" data-param="bpm" min="60" max="220" value="124">
             </div>
-            <div class="mt-auto bg-[#080808]/90 border border-zinc-800 p-4 rounded shadow-2xl">
-                <div id="sequencer-grid" class="grid grid-cols-[50px_repeat(16,_1fr)] gap-2"></div>
+            <div class="bg-zinc-900/50 p-2 border border-zinc-800">
+                SWING: <span id="val-swing">0</span>%
+                <input type="range" class="fader" data-param="swing" min="0" max="100" value="0">
+            </div>
+            <div class="bg-zinc-900/50 p-2 border border-zinc-800">
+                FM_AMT: <span id="val-fmAmount">0</span>
+                <input type="range" class="fader" data-param="fmAmount" min="0" max="100" value="0">
+            </div>
+            <div class="bg-zinc-900/50 p-2 border border-zinc-800">
+                SIDECHAIN: <span id="val-sidechain">50</span>%
+                <input type="range" class="fader" data-param="sidechain" min="0" max="100" value="50">
             </div>
         </div>
+
+        <div class="mt-auto bg-black border border-zinc-800 p-2">
+            <div id="sequencer-grid" class="grid grid-cols-[60px_repeat(16,1fr)] gap-1"></div>
+        </div>
     </main>
-    <footer class="h-14 border-t border-zinc-900 bg-[#111] flex items-center justify-between px-8">
-        <div class="text-[9px] text-zinc-600 font-bold uppercase tracking-[0.2em]">Data_Link: Established</div>
-        <button id="btn-render" class="px-10 py-2 bg-zinc-900 border border-[#ccff00] text-[#ccff00] font-bold text-[10px] uppercase">Start Engine</button>
-    </footer>
+
     <script type="module" src="./js/state.js"></script>
     <script type="module" src="./js/audio_engine.js"></script>
     <script type="module" src="./js/ui.js"></script>
