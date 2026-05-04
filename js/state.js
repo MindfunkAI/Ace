@@ -5,14 +5,18 @@ class StateManager extends EventTarget {
             isRendering: false,
             pitch: 0,
             cutoff: 1000,
-            resonance: 15,
             drive: 0,
-            wavefold: 0,
-            reverb: 20
+            steps: new Array(16).fill(false),
+            currentStep: 0,
+            bpm: 124
         };
     }
     update(key, val) {
-        this.state[key] = parseFloat(val);
+        this.state[key] = val;
+        this.dispatchEvent(new CustomEvent('change', { detail: this.state }));
+    }
+    toggleStep(index) {
+        this.state.steps[index] = !this.state.steps[index];
         this.dispatchEvent(new CustomEvent('change', { detail: this.state }));
     }
 }

@@ -3,65 +3,62 @@ import { appState } from './state.js';
 class AudioEngine {
     constructor() {
         this.ctx = null;
-        this.osc = null;
-        this.filter = null;
-        this.dist = null;
-        this.gain = null;
+        this.nextStepTime = 0;
+        this.currentStep = 0;
         this.initialized = false;
     }
 
     init() {
         if (this.initialized) return;
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        this.osc = this.ctx.createOscillator();
-        this.filter = this.ctx.createBiquadFilter();
-        this.dist = this.ctx.createWaveShaper();
-        this.gain = this.ctx.createGain();
-
-        this.osc.type = 'sawtooth';
-        this.filter.type = 'lowpass';
-        this.gain.gain.value = 0.2;
-
-        this.osc.connect(this.filter);
-        this.filter.connect(this.dist);
-        this.dist.connect(this.gain);
-        this.gain.connect(this.ctx.destination);
-
-        this.osc.start();
+        this.nextStepTime = this.ctx.currentTime;
+        this.scheduler();
         this.initialized = true;
-        console.log("AUDIO_CORE: ONLINE");
     }
 
-    updateParams(state) {
-        if (!this.initialized) return;
-        
-        // Pitch mapping
-        const freq = 110 * Math.pow(2, (state.pitch || 0) / 12);
-        this.osc.frequency.setTargetAtTime(freq, this.ctx.currentTime, 0.1);
+    scheduler() {
+        while (this.nextStepTime < this.ctx.currentTime + 0.1) {
+            this.scheduleStep(this.currentStep, this.nextStepTime);
+            this.advanceStep();
+        }
+        setTimeout(() => this.scheduler(), 25);
+    }
 
-        // Filter mapping
-        this.filter.frequency.setTargetAtTime(state.cutoff || 1000, this.ctx.currentTime, 0.1);
-        this.filter.Q.setTargetAtTime((state.resonance || 15) / 5, this.ctx.currentTime, 0.1);
+    advanceStep() {
+        const secondsPerBeat = 60.0 / appState.state.bpm / 4; // 16th notes
+        this.nextStepTime += secondsPerBeat;
+        this.currentStep = (this.currentStep + 1) % 16;
+        appState.update('currentStep', this.currentStep);
+    }
 
-        // Drive (Distortion)
-        if (state.drive > 0) {
-            this.dist.curve = this.makeDistortionCurve(state.drive);
-        } else {
-            this.dist.curve = null;
+    scheduleStep(step, time) {
+        if (appState.state.steps[step]) {
+            this.playTone(time);
         }
     }
 
-    makeDistortionCurve(amount) {
-        const k = amount * 2;
-        const n_samples = 44100;
-        const curve = new Float32Array(n_samples);
-        for (let i = 0; i < n_samples; ++i) {
-            const x = (i * 2) / n_samples - 1;
-            curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
-        }
-        return curve;
+    playTone(time) {
+        const osc = this.ctx.createOscillator();
+        const amp = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+
+        const freq = 110 * Math.pow(2, (appState.state.pitch || 0) / 12);
+        osc.frequency.setValueAtTime(freq, time);
+        osc.type = 'sawtooth';
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(appState.state.cutoff, time);
+        filter.frequency.exponentialRampToValueAtTime(100, time + 0.1);
+
+        amp.gain.setValueAtTime(0.15, time);
+        amp.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+
+        osc.connect(filter);
+        filter.connect(amp);
+        amp.connect(this.ctx.destination);
+
+        osc.start(time);
+        osc.stop(time + 0.1);
     }
 }
-
 export const audioEngine = new AudioEngine();
